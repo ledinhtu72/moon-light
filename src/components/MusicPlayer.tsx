@@ -1,12 +1,14 @@
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
-import { CONFIG } from "../config";
 
 const MusicPlayer: React.FC = () => {
   const [playing, setPlaying] = useState(false);
   const [canPlay, setCanPlay] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Resolve path correctly regardless of deployment base (localhost vs /moon-light/)
+  const audioSrc = `${import.meta.env.BASE_URL}music/background.mp3`;
 
   const toggle = () => {
     if (!audioRef.current) return;
@@ -17,8 +19,8 @@ const MusicPlayer: React.FC = () => {
       audioRef.current
         .play()
         .then(() => setPlaying(true))
-        .catch(() => {
-          // No audio file yet – show placeholder state
+        .catch((err) => {
+          console.warn("Audio play failed:", err);
           setCanPlay(false);
         });
     }
@@ -29,7 +31,7 @@ const MusicPlayer: React.FC = () => {
       {/* Hidden audio element */}
       <audio
         ref={audioRef}
-        src={CONFIG.musicSrc}
+        src={audioSrc}
         loop
         preload="none"
         onError={() => setCanPlay(false)}
