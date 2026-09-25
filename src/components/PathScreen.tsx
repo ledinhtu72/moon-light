@@ -27,6 +27,7 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
 
   return (
     <motion.div
+      className="path-root"
       style={{
         position: "relative",
         width: "100%",
@@ -42,18 +43,90 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
     >
+      {/* ── Media query overrides for mobile ── */}
+      <style>{`
+        /* ===== MOBILE: max 768px ===== */
+        @media (max-width: 768px) {
+          /* Root becomes a natural flex column — no forced full height */
+          .path-root {
+            justify-content: flex-start !important;
+            align-items: center !important;
+          }
+
+          /* Title: pull it closer to the moon */
+          .path-title {
+            margin-top: clamp(72px, 22vw, 96px) !important;
+            padding: 0 20px !important;
+          }
+
+          /* Lanterns container: take it OUT of absolute positioning */
+          .path-lanterns-outer {
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            right: auto !important;
+            height: auto !important;
+            width: 100% !important;
+            margin-top: clamp(24px, 6vw, 40px) !important;
+            padding-bottom: clamp(28px, 8vw, 48px) !important;
+          }
+
+          /* Hide decorative ground/trees on mobile to save vertical space */
+          .path-ground,
+          .path-cobble,
+          .path-tree-left,
+          .path-tree-right {
+            display: none !important;
+          }
+
+          /* Lanterns grid */
+          .path-lanterns-grid {
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            right: auto !important;
+            width: 100% !important;
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 6px !important;
+            padding: 0 14px !important;
+          }
+
+          /* Moon: slightly smaller */
+          .path-moon {
+            width: clamp(72px, 22vw, 110px) !important;
+            height: clamp(72px, 22vw, 110px) !important;
+          }
+
+          /* Moon beam: narrower */
+          .path-moonbeam {
+            width: min(200px, 60vw) !important;
+          }
+        }
+
+        /* ===== Very small phones: max 380px ===== */
+        @media (max-width: 380px) {
+          .path-title {
+            margin-top: clamp(64px, 20vw, 80px) !important;
+          }
+          .path-lanterns-outer {
+            margin-top: 20px !important;
+          }
+        }
+      `}</style>
+
       <SkyCanvas />
 
-      {/* ── Moon – responsive size, never overlaps title ── */}
+      {/* Moon */}
       <motion.div
+        className="path-moon"
         style={{
           position: "absolute",
           top: "-40px",
           left: "50%",
           transform: "translateX(-50%)",
-          /* Desktop: 120–180px.  Mobile ≤768: reduced via clamp */
-          width:  "clamp(80px, 16vw, 180px)",
-          height: "clamp(80px, 16vw, 180px)",
+          width: "clamp(120px, 20vw, 180px)",
+          height: "clamp(120px, 20vw, 180px)",
           borderRadius: "50%",
           background: "radial-gradient(circle at 40% 35%, #fff9dc, #f5d56e 50%, #e8b84b)",
           boxShadow:
@@ -66,47 +139,44 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
 
       {/* Moon light beam */}
       <div
+        className="path-moonbeam"
         style={{
           position: "absolute",
           top: 0,
           left: "50%",
           transform: "translateX(-50%)",
-          width: "min(400px, 90vw)",
+          width: "400px",
           height: "70%",
-          background: "linear-gradient(to bottom, rgba(245,213,110,0.08) 0%, transparent 100%)",
+          background:
+            "linear-gradient(to bottom, rgba(245,213,110,0.08) 0%, transparent 100%)",
           clipPath: "polygon(40% 0, 60% 0, 80% 100%, 20% 100%)",
           pointerEvents: "none",
           zIndex: 1,
         }}
       />
 
-      {/* ══════════════════════════════════════════
-          TITLE BLOCK
-          – uses flex + padding so it never clips
-          – marginTop pushes it below the moon
-      ══════════════════════════════════════════ */}
+      {/* Title */}
       <motion.div
+        className="path-title"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.8 }}
         style={{
           position: "relative",
           zIndex: 5,
-          width: "100%",
-          /* Pushes below moon on every screen width.
-             clamp: min 80px (tiny mobile), preferred 18vw, max 18vh */
-          marginTop: "clamp(60px, 18vw, 18vh)",
-          padding: "0 24px",
           textAlign: "center",
+          marginTop: "18vh",
+          padding: "0 24px",
+          width: "100%",
           boxSizing: "border-box",
         }}
       >
         <p
           style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "clamp(0.7rem, 3.2vw, 1rem)",
+            fontSize: "clamp(0.85rem, 2vw, 1rem)",
             color: "rgba(245,213,110,0.7)",
-            letterSpacing: "clamp(1px, 1vw, 3px)",
+            letterSpacing: "3px",
             textTransform: "uppercase",
             marginBottom: 8,
             lineHeight: 1.4,
@@ -117,7 +187,7 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
         <h2
           style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "clamp(1rem, 5vw, 2rem)",
+            fontSize: "clamp(1.3rem, 3.5vw, 2rem)",
             color: "#fdf4e3",
             fontWeight: 400,
             lineHeight: 1.35,
@@ -128,23 +198,23 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
         </h2>
       </motion.div>
 
-      {/* ══════════════════════════════════════════
-          BOTTOM SCENERY + LANTERNS
-          – absolute, pinned to bottom
-          – height slightly bigger on mobile so labels show
-      ══════════════════════════════════════════ */}
+      {/* ══ Scenery + Lanterns wrapper ══
+          Desktop: absolute, pinned bottom 0, height 45%
+          Mobile:  overridden to relative/auto via .path-lanterns-outer
+      */}
       <div
+        className="path-lanterns-outer"
         style={{
           position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
-          /* Enough height to contain lanterns + labels + padding */
-          height: "clamp(200px, 48%, 55%)",
+          height: "45%",
         }}
       >
         {/* Ground gradient */}
         <div
+          className="path-ground"
           style={{
             position: "absolute",
             bottom: 0,
@@ -158,6 +228,7 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
 
         {/* Cobblestone path */}
         <div
+          className="path-cobble"
           style={{
             position: "absolute",
             bottom: "5%",
@@ -174,6 +245,7 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
 
         {/* Trees left */}
         <svg
+          className="path-tree-left"
           style={{ position: "absolute", bottom: "15%", left: 0, height: "70%", opacity: 0.6 }}
           viewBox="0 0 200 300"
           fill="none"
@@ -185,6 +257,7 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
 
         {/* Trees right */}
         <svg
+          className="path-tree-right"
           style={{ position: "absolute", bottom: "15%", right: 0, height: "70%", opacity: 0.6, transform: "scaleX(-1)" }}
           viewBox="0 0 200 300"
           fill="none"
@@ -194,23 +267,21 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
           <path d="M170 300 L170 120 L148 165 L162 120 L145 148 L170 75 L195 148 L178 120 L192 165 L170 120Z" fill="#0f1629" />
         </svg>
 
-        {/* ══ LANTERNS ROW ══
-            CSS Grid 4 equal columns — always one row, fully centred.
-            gap shrinks on narrow screens via clamp.
-            padding keeps items off the edges.
+        {/* ══ Lanterns grid ══
+            Desktop: absolute, bottom 12%
+            Mobile:  overridden by .path-lanterns-grid
         */}
         <div
+          className="path-lanterns-grid"
           style={{
             position: "absolute",
-            bottom: "clamp(28px, 6%, 10%)",
+            bottom: "12%",
             left: 0,
             right: 0,
-            /* Grid: 4 equal cols, gap scales with screen */
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: "clamp(4px, 2vw, 24px)",
-            padding: "0 clamp(10px, 3vw, 24px)",
-            zIndex: 5,
+            display: "flex",
+            justifyContent: "center",
+            gap: "clamp(16px, 4vw, 48px)",
+            padding: "0 5%",
           }}
         >
           {LANTERNS.map((ln) => (
@@ -226,20 +297,19 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                /* No fixed minWidth — let grid control width */
                 gap: 0,
                 background: "none",
                 border: "none",
                 cursor: "pointer",
                 color: "#fdf4e3",
-                padding: 0,
-                /* Prevent button from breaking out of its grid cell */
                 minWidth: 0,
-                width: "100%",
+                flex: "1 1 0",
+                maxWidth: 120,
+                padding: 0,
               }}
             >
               {/* String */}
-              <div style={{ width: 1, height: 14, background: "rgba(245,213,110,0.3)" }} />
+              <div style={{ width: 1, height: 16, background: "rgba(245,213,110,0.3)" }} />
 
               {/* Lantern body */}
               <motion.div
@@ -255,9 +325,8 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
                   boxShadow: { duration: 1.5, repeat: Infinity, repeatType: "reverse" },
                 }}
                 style={{
-                  /* Lantern scales responsively; minimum usable on 320px */
-                  width:  "clamp(38px, 9vw, 64px)",
-                  height: "clamp(52px, 12vw, 86px)",
+                  width: "clamp(44px, 8vw, 64px)",
+                  height: "clamp(60px, 10vw, 86px)",
                   borderRadius: "35% 35% 45% 45%",
                   background:
                     ln.key === "gift"
@@ -270,17 +339,20 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
                   position: "relative",
                   transition: "transform 0.2s ease",
                   transform: hovered === ln.key ? "scale(1.12)" : "scale(1)",
-                  border: hovered === ln.key ? "1px solid rgba(245,213,110,0.4)" : "1px solid transparent",
+                  border:
+                    hovered === ln.key
+                      ? "1px solid rgba(245,213,110,0.4)"
+                      : "1px solid transparent",
                 }}
               >
-                <span style={{ fontSize: "clamp(14px, 3.5vw, 22px)", lineHeight: 1 }}>
+                <span style={{ fontSize: "clamp(16px, 3vw, 22px)", lineHeight: 1 }}>
                   {ln.emoji}
                 </span>
                 {/* Inner glow */}
                 <div
                   style={{
                     position: "absolute",
-                    inset: 5,
+                    inset: 6,
                     borderRadius: "30%",
                     background: "radial-gradient(circle, rgba(255,220,130,0.4), transparent)",
                     animation: "pulse-glow 2s infinite",
@@ -289,38 +361,30 @@ const PathScreen: React.FC<PathScreenProps> = ({ onSelect }) => {
               </motion.div>
 
               {/* Tassel */}
-              <div style={{ width: 2, height: 8, background: "#d4613a", opacity: 0.8 }} />
-              <div style={{ display: "flex", gap: 2, marginBottom: 6 }}>
+              <div style={{ width: 2, height: 10, background: "#d4613a", opacity: 0.8 }} />
+              <div style={{ display: "flex", gap: 3, marginBottom: 8 }}>
                 {[0, 1, 2].map((i) => (
-                  <div key={i} style={{ width: 1, height: 6, background: "#d4613a", opacity: 0.6 }} />
+                  <div key={i} style={{ width: 1, height: 8, background: "#d4613a", opacity: 0.6 }} />
                 ))}
               </div>
 
-              {/* Label – wraps naturally, centred */}
+              {/* Label */}
               <motion.span
                 animate={{ opacity: hovered === ln.key ? 1 : 0.8 }}
                 style={{
                   fontFamily: "'Be Vietnam Pro', sans-serif",
-                  /*
-                    On 320px each col is ≈72px → font ~11px is readable.
-                    On 390px each col is ≈87px → font ~13px.
-                    Desktop stays at 0.85rem.
-                  */
-                  fontSize: "clamp(0.62rem, 3vw, 0.85rem)",
+                  fontSize: "clamp(0.65rem, 1.8vw, 0.85rem)",
                   fontWeight: 500,
-                  letterSpacing: "0px",
+                  letterSpacing: "0.5px",
                   color: hovered === ln.key ? "#f5d56e" : "#fdf4e3",
-                  textShadow: hovered === ln.key ? "0 0 10px rgba(245,213,110,0.6)" : "none",
+                  textShadow:
+                    hovered === ln.key ? "0 0 10px rgba(245,213,110,0.6)" : "none",
                   transition: "all 0.3s",
                   textAlign: "center",
-                  lineHeight: 1.35,
-                  /* Allow wrapping, prevent overflow */
-                  wordBreak: "break-word",
-                  overflowWrap: "break-word",
-                  width: "100%",
+                  lineHeight: 1.3,
                   display: "block",
-                  /* Bottom padding so text isn't flush with screen edge */
-                  paddingBottom: 4,
+                  width: "100%",
+                  wordBreak: "break-word",
                 }}
               >
                 {ln.label}
