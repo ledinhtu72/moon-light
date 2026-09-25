@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import SkyCanvas from "./SkyCanvas";
 
-type LanternKey = "memories" | "letter" | "wish" | "gift";
+type LanternKey = "likes" | "letter" | "wish" | "gift";
 
 interface LanternData {
   key: LanternKey;
@@ -13,7 +13,7 @@ interface LanternData {
 }
 
 const LANTERNS: LanternData[] = [
-  { key: "memories", emoji: "🏮", label: "Kỷ Niệm", x: "15%", delay: 0 },
+  { key: "likes", emoji: "❤️", label: "Điều Anh Thích", x: "15%", delay: 0 },
   { key: "letter", emoji: "🏮", label: "Lời Muốn Nói", x: "35%", delay: 0.15 },
   { key: "wish", emoji: "🏮", label: "Điều Ước", x: "57%", delay: 0.3 },
   { key: "gift", emoji: "🎁", label: "Món Quà", x: "76%", delay: 0.45 },

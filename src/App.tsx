@@ -3,14 +3,14 @@ import { AnimatePresence } from "framer-motion";
 import OpeningScreen from "./components/OpeningScreen";
 import PathScreen from "./components/PathScreen";
 import type { LanternKey } from "./components/PathScreen";
-import MemoriesScreen from "./components/MemoriesScreen";
+import LikesScreen from "./components/LikesScreen";
 import LetterScreen from "./components/LetterScreen";
 import WishScreen from "./components/WishScreen";
 import GiftScreen from "./components/GiftScreen";
 import MusicPlayer from "./components/MusicPlayer";
 import "./index.css";
 
-type Screen = "opening" | "path" | "memories" | "letter" | "wish" | "gift";
+type Screen = "opening" | "path" | "likes" | "letter" | "wish" | "gift";
 
 function App() {
   const [screen, setScreen] = useState<Screen>("opening");
@@ -44,9 +44,9 @@ function App() {
           </div>
         )}
 
-        {screen === "memories" && (
-          <div key="memories" style={{ position: "absolute", inset: 0 }}>
-            <MemoriesScreen onBack={() => setScreen("path")} />
+        {screen === "likes" && (
+          <div key="likes" style={{ position: "absolute", inset: 0 }}>
+            <LikesScreen onBack={() => setScreen("path")} />
           </div>
         )}
 
